@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post-mortem — Unicorn Sugarworld at js13kGames 2026</title>
+<link rel="icon" href="/athena.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="canonical" href="https://unicornsugarworld.com/post-mortem/">
+<meta property="og:image" content="/og-preview.png">
+<meta name="description" content="How five games under 13 kilobytes each were made in a month by a producer directing an AI partner, with what went wrong and a glossary of every technical term used.">
+<style>
+  :root{--ink:#3b1f2b;--ink-2:#5c3d4c;--paper:#fffaf3;--paper-2:#f9d9d2;--rule:#e6c9c3}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(120% 90% at 50% 0%,var(--paper),var(--paper-2)) fixed;
+    color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+  main{max-width:720px;margin:0 auto;padding:48px 22px 48px;font-size:17px}
+  .kicker{margin:0;font-size:13px;letter-spacing:.3em;text-transform:uppercase;opacity:.62;font-weight:700}
+  h1{margin:2px 0 6px;font-size:clamp(30px,6vw,40px);font-family:ui-serif,Georgia,serif;font-weight:600;line-height:1.1}
+  .byline{font-size:14px;opacity:.75;margin:0 0 28px}
+  h2{font-family:ui-serif,Georgia,serif;font-weight:600;font-size:25px;margin:40px 0 8px}
+  h3{font-family:ui-serif,Georgia,serif;font-weight:600;font-size:19px;margin:26px 0 6px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px;padding-left:1.3em}
+  li{margin:4px 0}
+  a{color:inherit}
+  .toc{font-size:14px;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:14px 18px;margin:0 0 26px}
+  .toc ol{margin:0;columns:2;column-gap:20px}
+  .toc a{text-decoration:none;border-bottom:1px solid #c9a4b3}
+  .stub{border-left:4px solid #c98aa3;background:#fff;padding:12px 16px;border-radius:0 10px 10px 0;font-size:15px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;margin:0 0 16px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{font-weight:700}
+  dl{margin:0}
+  dt{font-weight:700;margin-top:12px}
+  dd{margin:2px 0 0 0;color:var(--ink-2);font-size:15.5px}
+  .disc{font-size:13px;opacity:.72;font-style:italic}
+  .back{display:inline-block;margin-bottom:24px;font-size:13px;text-decoration:none;border-bottom:1px solid currentColor}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;opacity:.75}
+  a:focus-visible{outline:3px solid #8a3a5a;outline-offset:3px}
+</style>
+<!-- Cloudflare Web Analytics: paste the token from your dashboard (see DEPLOY.md, Part 4) -->
+<!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"YOUR_TOKEN_HERE"}'></script> -->
+</head>
+<body>
+<main>
+<a class="back" href="/"><img src="/athena.svg" alt="" style="width:26px;vertical-align:-8px;margin-right:6px">Unicorn Sugarworld</a>
+<p class="kicker">Post-mortem</p>
+<h1>Five games in a month without writing the code</h1>
+<p class="byline">Jesse Rogers · js13kGames 2026 · <a href="/">unicornsugarworld.com</a></p>
+
+<nav class="toc" aria-label="Contents"><ol>
+  <li><a href="#what">What this is</a></li>
+  <li><a href="#numbers">The numbers</a></li>
+  <li><a href="#split">Who did what</a></li>
+  <li><a href="#story">Story first</a></li>
+  <li><a href="#wrong">What went wrong</a></li>
+  <li><a href="#bytes">Fighting for bytes</a></li>
+  <li><a href="#access">Accessibility as an edge</a></li>
+  <li><a href="#testing">Testing without a browser</a></li>
+  <li><a href="#vr">VR without a headset</a></li>
+  <li><a href="#advice">What I would tell you</a></li>
+  <li><a href="#results">Results</a></li>
+  <li><a href="#glossary">Glossary</a></li>
+</ol></nav>
+
+<h2 id="what">What this is</h2>
+<p>Between 13 August and 13 September 2026 I made five games for js13kGames, a competition where every entry must fit in 13,312 bytes when zipped. The theme was <em>Unicorns and Rainbows</em>. The five games tell one story, in order, about a one-winged unicorn named Athena and a spider named Anansi who knows what is buried under her people's palace.</p>
+<p>I did not write the code. I am not a coder, a writer, or an artist, and I did not pretend to be one for this project. I directed. An AI partner wrote every line, drew every shape, and composed every note. My job was deciding what each game was, what it should feel like, which ideas were wrong, and whether the result was good enough to put in front of strangers. If you use AI tools and you have wondered whether that job is real, this page is my answer, including the parts where I did it badly.</p>
+<p>Anything in <strong>bold</strong> is defined in the glossary at the end.</p>
+<p class="disc">Model used for research, drafting, editing, and verification: Claude Fable 5.1. The games were built with Claude Opus 5 and Claude Fable 5.1 across many sessions.</p>
+
+<h2 id="numbers">The numbers</h2>
+<table>
+  <tr><th>Game</th><th>What it is</th><th>Zipped size</th></tr>
+  <tr><td>Rainbow Tiles</td><td>Tile puzzle with a small deck of tricks</td><td>12,847 B</td></tr>
+  <tr><td>Sugarwind</td><td>Dune-surfing arcade game, one minute per level</td><td>11,993 B</td></tr>
+  <tr><td>Looking Up</td><td>A negotiation with a spider, played in cards</td><td>12,021 B</td></tr>
+  <tr><td>Unicorn Apocalypse</td><td>Rail game in a raymarched desert, plays in VR</td><td>13,236 B</td></tr>
+  <tr><td>Deathball</td><td>Physics game about rolling a cage through a tomb</td><td>11,876 B</td></tr>
+</table>
+<p>Sizes are from my build script, packed with Roadroller, and the submitted zips may differ by a few bytes. The limit is 13,312. The largest entry finished with 76 bytes to spare, which is not a margin I would recommend, and the reason is in the bytes section below. Every one of these runs on a phone. One of them runs in a headset I do not own.</p>
+
+<h2 id="split">Who did what</h2>
+<p>The honest split changed during the month, and the change is the most useful thing I learned.</p>
+<p>At the start I planned to write <strong>specs</strong>: documents describing each game's creative and technical decisions, which a cheaper model would then build. I wrote two of those. They were good documents. Then the model that wrote the specs read the existing code, said it was cleaner than expected, and offered to build the game itself instead of handing it off. I said yes, and from that point the work went faster and the results got better. The specs turned out to be worth writing anyway, because they forced me to make the decisions before anyone touched code, but the handoff step was waste.</p>
+<p>What I actually did, every day:</p>
+<ul>
+  <li>Decided the story and the order of the games, and what each one was about.</li>
+  <li>Answered the model's questions, and when it offered two or three options with a recommendation, picked one. When I did not answer, it went with its recommendation, and it was usually right.</li>
+  <li>Played every build on my phone and sent screenshots of what was wrong.</li>
+  <li>Said no. The most valuable sentence I said all month was "the flutes have to have notches that match the mounts." The second most valuable was "the statues could be better."</li>
+  <li>Got out of the way. My notes from the second week say, in so many words, that the more I stood aside the better the result. I meant it as a compliment to the tool. It is also a job description.</li>
+</ul>
+<p>What I did not do: write code, draw, compose, or tune numbers. When the model told me the ripe window on a drain was 0.55 seconds, I did not have an opinion about whether that was right. I had an opinion about whether the game felt right when I played it, which is a different thing, and it is the thing a director is for.</p>
+
+<h2 id="story">Story first</h2>
+<p>The single decision that made the batch work was made half awake on a Sunday morning, and it was about story, not technology.</p>
+<p>Game four was supposed to be Athena flying home to defend her people from a swarm of bees. It was already built. It looked wonderful and played like a tech demo, because a rail game needs the sky full of targets and the story gave no reason for the sky to be full of anything. Then I realised who the enemy should be: unicorns. And who the player should be: the thing buried under the tombs, the thing that ate every unicorn that could not fly. The ones with strong wings escaped, and their descendants are Athena's people. The ones who stayed learned a lullaby and sealed it in.</p>
+<p>That flip solved three problems at once. The sky could fill with unicorns because they were the enemy. The game had a reason to exist in a competition where every other entry would have a unicorn protagonist. And it gave the series its meaning: a seductive darkness that a society can suppress with norms and institutions but never destroy, and a princess who learns that her ancestors were the ones who ran.</p>
+<p>The mechanic followed from the story. You do not shoot unicorns. You <strong>drain</strong> their colour, and if you let go at the moment they turn grey, they turn around and fly beside you. Hold too long and they break. That gave the game the one decision it had been missing, and it is on theme in a way a fifth kind of hornet could never be. The best design work of the month was a story note.</p>
+
+<h2 id="wrong">What went wrong</h2>
+<h3>Looking Up, version three</h3>
+<p>The negotiation game had the best writing in the batch and nobody could get anything out of it. I asked for feedback from a second model instance, which guessed it would land somewhere between 40th and 80th and said the gameplay was the ceiling. It was right.</p>
+<p>Version three had seven secrets, a mood system with three colour channels you had to push separately, a three-day clock, and an "audit" card you needed to hold at the same moment the mood was right and two keywords were paired. I had approved every one of those systems, one at a time, across several sessions. Together they were unplayable in the two minutes a judge gives you. Worse, the spider had picked up traits I never wanted: a stated age of nine hundred years, three thousand years of history, ninety-nine unicorns eaten before you. When I complained about hallucinated lore, the model traced each one back to something I had said in an earlier session and let it stand. It was not inventing. It was remembering me too well.</p>
+<p>The rebuild replaced the colour channels with a ring of nine named moods. Every card names the mood it walks him toward, and the ring is drawn on screen as nine dots with him and the target marked. The audit card became a standing button. The three days became one. The first three topics he drifts to are fixed so every player reaches the first secret without luck. And after he speaks, nothing is playable until you tap the word he let slip, with Athena saying "he said something I should remember." That last one is the <strong>tap gate</strong>, and it did more for onboarding than any instruction text.</p>
+<h3>The lesson under the lesson</h3>
+<p>Every system in version three was reasonable on the day I approved it. Complexity does not arrive as a bad decision. It arrives as ten good ones that were never played together. The fix was not a better model. It was a rule: after any build, play it as a stranger with thirty seconds of patience, and if the first objective is not clear by then, cut a system.</p>
+
+<h2 id="bytes">Fighting for bytes</h2>
+<p>Unicorn Apocalypse started its rebuild at 18,260 bytes zipped. The limit is 13,312. The engine underneath it, a <strong>raymarched</strong> desert with a real angular rainbow in the sky, was worth keeping, so the five thousand bytes had to come from everywhere else.</p>
+<p>The order things went, and what each cost:</p>
+<ol>
+  <li>A <strong>build script</strong> that stripped comments and whitespace out of the <strong>shaders</strong>, renamed every shader variable to two letters, ran <strong>minification</strong> on the JavaScript, and folded the page's CSS and markup into the script so <strong>Roadroller</strong> could pack the whole thing as one stream. That alone found about four thousand bytes.</li>
+  <li>Sound effects rewritten so five one-shot noises share one function with different numbers. This is <strong>data-driven design</strong> from the book, applied to audio.</li>
+  <li>A second beam, a reticle, glittering sugar on the dunes, the spiral on the lollipop trees, per-explosion colours, speed surges on the rail, three volume sliders down to one. Each cut was small. Together they were the last thousand bytes.</li>
+</ol>
+<p>Two things worth knowing if you try this. First, cuts should come from features nobody would miss in a two-minute play, never from the feel. The <strong>hit stop</strong>, <strong>screen shake</strong>, and haptics stayed to the end. Second, Roadroller is not free. It compresses harder than a zip, but the packed file is slow to load and impossible to read, so the readable file and the shipping file have to be separate, and the byte count you steer by has to come from the build script, not from looking at the file.</p>
+
+<h2 id="access">Accessibility as an edge</h2>
+<p>Judges play hundreds of entries in a few weeks, on whatever hardware they have. Most entries give them nothing to notice about comfort. All five of these do, and it was a deliberate choice rather than a courtesy.</p>
+<ul>
+  <li>Text contrast at <strong>WCAG</strong> 2.1 AAA where the game is text, which meant throwing out the indigo-on-black palette in Looking Up entirely. Colour is never the only channel: every mood dot has a name beside it, every flute has notches that match its socket.</li>
+  <li>A <strong>luminance cap</strong> in the shader games so no frame can exceed a brightness ceiling, and a reduced-flashing mode that lowers it further. The wingbeat shimmer on distant unicorns was tuned to a frequency below the range that triggers photosensitive seizures.</li>
+  <li>A <strong>comfort vignette</strong> that closes the edges of the view when motion gets intense, and a rail at ground level in the VR entry, because vection, the feeling of moving when you are not, is what makes people sick in headsets.</li>
+</ul>
+<p>None of this cost more than a few hundred bytes. All of it went in the entry descriptions, because a judge who does not know it is there cannot score it.</p>
+
+<h2 id="testing">Testing without a browser</h2>
+<p>The model that built these could not open a browser. It could run code, but not look at it. That sounds like a fatal problem for game development and it turned out to be a solvable one.</p>
+<p>For the conversation game, it loaded the page into <strong>jsdom</strong>, a fake browser that runs in a terminal, stubbed out the sound and drawing so they would not crash, and wrote a <strong>scripted player</strong>: a few lines that tap whatever pulses, pick the card labelled "closer," and ask when the mood is right. Then it ran that player through the game and printed every turn. That is how we know a player who follows the hints takes the first secret on turn three or four, rather than hoping they do. When the first run showed the tutorial firing on turn eight instead of turn three, the fix was one condition, found in a minute, that a hundred manual playtests might have missed.</p>
+<p>For the statues in Deathball, which I had said were the weak art, it rendered the drawing code with <strong>node-canvas</strong> into an image, looked at the image, and redrew. Three passes: the first was a blob, the second was a slug with a horn, the third was a rearing warhorse in plate barding. I saw the previews before I saw the game.</p>
+<p>My phone was still the only real playtest, and it caught things nothing else did: statue silhouettes, flute notches that were too faint to see, contrast that passed on a monitor and failed on glass in daylight. The scripted tests found logic bugs. Screenshots found taste.</p>
+
+<h2 id="vr">VR without a headset</h2>
+<p>Unicorn Apocalypse is a <strong>WebXR</strong> entry and I have never worn a headset. The model built the VR path from the projection matrices the headset provides: each eye gets a slightly different, off-centre view, and the rail game's camera had to derive that offset per eye rather than assume a symmetric one. The right controller is the horn. The trigger drains, the squeeze makes the flock scream, and the screen shake that works on a flat screen is replaced by controller <strong>haptics</strong>, because shaking a headset user's whole world is a good way to end their session.</p>
+<p>It has been tested in a browser emulator and not on hardware. The plan is a tester from the js13kGames Discord before the deadline. If you are reading this after judging, the results section says whether that plan worked.</p>
+
+<h2 id="advice">What I would tell you</h2>
+<ol>
+  <li>Decide the story before the mechanics. My best technical result came from a story note.</li>
+  <li>Write the spec even if you will not hand it off. It makes you decide.</li>
+  <li>Ask for options with a recommendation, and let the recommendation stand when you have nothing to add. Silence was a valid answer more often than I expected.</li>
+  <li>Play as a stranger with thirty seconds of patience, and cut systems until the first objective survives that.</li>
+  <li>Send screenshots. A picture of the wrong thing is a better instruction than a paragraph about it.</li>
+  <li>Say no to things that look fine. The statues looked fine. The notches looked fine. Fine is the enemy.</li>
+  <li>Keep the readable file and the shipping file apart, and steer by the number from the build script.</li>
+  <li>Get the model to test what it can test without you: scripted playthroughs, rendered previews, byte counts. Save your own time for taste.</li>
+</ol>
+
+<h2 id="results">Results</h2>
+<div class="stub">
+  <p><strong>To be filled in after judging closes.</strong> Placement per entry, category mentions if any, whether the VR entry ran on hardware, and the honest comparison against the second model's guess of "40th to 80th" for Looking Up.</p>
+</div>
+
+<h2 id="glossary">Glossary</h2>
+<p>Terms marked with a star are the standard vocabulary of this competition and carry their usual meanings. The rest are particular to this project.</p>
+<dl>
+  <dt>Analytic intersection</dt><dd>Working out exactly where a ray meets a simple shape (a sphere, an ellipsoid) with a formula instead of stepping toward it. The unicorns in Apocalypse are built from a few of these, so they are cheap and correct in both eyes.</dd>
+  <dt>Asymmetric projection</dt><dd>A camera view that is not centred on the eye. VR headsets use one per eye. The game derives the offset from the projection matrix the headset provides rather than guessing.</dd>
+  <dt>Build script</dt><dd>A small program that turns the readable game file into the shipping file: strips, minifies, packs, zips, and prints the byte count.</dd>
+  <dt>Chromatic aberration ★</dt><dd>Separating the red and blue channels slightly, suggesting a camera lens.</dd>
+  <dt>Comfort vignette</dt><dd>A darkening at the edges of the view that closes in when motion is intense, to reduce motion sickness.</dd>
+  <dt>Data-driven design ★</dt><dd>Behaviour defined by a table of numbers rather than by separate code for each case. The three unicorn factions and the five sound effects are tables.</dd>
+  <dt>Deflate ★</dt><dd>The compression method used by zip files. Rewards repetition, punishes randomness.</dd>
+  <dt>Drain window</dt><dd>The short moment after a unicorn turns grey when releasing converts it. Hold past it and it breaks. The one decision the whole rail game runs on.</dd>
+  <dt>Dynamic resolution</dt><dd>Rendering at a lower resolution when frames take too long, then scaling up. Insurance for judges on weak hardware.</dd>
+  <dt>Fractal noise (fbm) ★</dt><dd>Several layers of noise at different scales added together, producing detail at every distance. The dunes.</dd>
+  <dt>Fragment shader ★</dt><dd>A program deciding the colour of each pixel. The whole desert is one of these.</dd>
+  <dt>Haptics</dt><dd>Controller vibration. Replaces screen shake in VR.</dd>
+  <dt>Hit stop ★</dt><dd>Briefly freezing the game on impact to convey weight.</dd>
+  <dt>jsdom</dt><dd>A fake browser that runs in a terminal, used to run a game's logic without a screen.</dd>
+  <dt>Juice ★</dt><dd>Small feedback effects that make actions feel good.</dd>
+  <dt>Karplus-Strong</dt><dd>A way of making a plucked-string sound from a short burst of noise fed back through a delay. Every bell, flute, and pluck in these games is this, in a few lines.</dd>
+  <dt>Luminance cap</dt><dd>A ceiling on how bright any pixel can get, applied in the final pass, so no frame can flash dangerously.</dd>
+  <dt>Minification ★</dt><dd>Automatically shortening code by removing spaces and renaming variables. Happens at build time, never by hand.</dd>
+  <dt>Mood ring</dt><dd>Looking Up's model of Anansi: nine named moods arranged in a circle by emotional closeness. Every card moves him one step.</dd>
+  <dt>node-canvas</dt><dd>A drawing library that runs in a terminal, used to render a game's shapes to an image so they can be checked without a browser.</dd>
+  <dt>Noise ★</dt><dd>In graphics, smoothly varying randomness. In audio, the sound of all frequencies at once.</dd>
+  <dt>Octave ★</dt><dd>One layer of a fractal noise stack.</dd>
+  <dt>Palette ★</dt><dd>A small named list of colours that everything refers to. Each game in the series has one, and the title screens share a structure while the palettes differ.</dd>
+  <dt>Post-processing ★</dt><dd>A shader applied to the finished image. The vignette, the aberration, the luminance cap, and the fade to white all live there.</dd>
+  <dt>Procedural generation ★</dt><dd>Producing content from a formula instead of storing it. Nothing in these games is stored.</dd>
+  <dt>Ray marching ★</dt><dd>Finding what a pixel sees by stepping along a line through a mathematically described space. Beautiful, expensive. The desert.</dd>
+  <dt>Roadroller ★</dt><dd>A JavaScript packer built for this competition that compresses harder than a zip alone, at a cost in loading time.</dd>
+  <dt>Scripted player</dt><dd>A few lines of code that play a game by simple rules, so a whole run can be checked in seconds.</dd>
+  <dt>Screen shake ★</dt><dd>Offsetting the view by a few random pixels, decaying over a fraction of a second.</dd>
+  <dt>Seeded RNG ★</dt><dd>A random number generator that produces the same sequence every time from the same starting number. Not used in this batch; it is here because the book leans on it and you will want it for anything with levels worth sharing.</dd>
+  <dt>Shader ★</dt><dd>A small program that runs on the graphics card.</dd>
+  <dt>Signed distance function</dt><dd>A formula that says how far a point is from a surface, and whether it is inside or outside. Ray marching steps by that distance. The terrain is one.</dd>
+  <dt>Silhouette ★</dt><dd>An object's outline shape. What players read first, and what generated art most often gets wrong. The statues were rebuilt three times for this reason.</dd>
+  <dt>Spec</dt><dd>A document of creative and technical decisions written before code. Worth writing even when nobody else reads it.</dd>
+  <dt>Sphere tracing ★</dt><dd>The safe-stepping method that makes ray marching practical, using distance to decide step size.</dd>
+  <dt>Stereo panning</dt><dd>Placing a sound left or right by where it happens on screen. Cheap, and it makes a small game feel spatial.</dd>
+  <dt>Tap gate</dt><dd>An onboarding device: nothing else is playable until the player taps the thing they need to learn about. Looking Up uses it on every keyword.</dd>
+  <dt>Twelve-pulse timeline</dt><dd>A twelve-slot rhythm grid shared by three of the games. Slots fill as the player progresses, so the music grows with the state of play instead of looping under it.</dd>
+  <dt>Typewriter reveal</dt><dd>Showing text a few characters at a time. Used for both speakers in Looking Up, at different speeds, so they read as different voices.</dd>
+  <dt>Vignette ★</dt><dd>Darkening toward the edges of the screen.</dd>
+  <dt>WCAG</dt><dd>The Web Content Accessibility Guidelines. Level AA is the usual bar; AAA asks for higher contrast, roughly 7 to 1 between text and background.</dd>
+  <dt>Web Audio API ★</dt><dd>The browser's built-in sound synthesis system.</dd>
+  <dt>WebXR</dt><dd>The browser's built-in support for headsets and controllers. A page can ask for a VR session, and if the device says yes, draw one view per eye.</dd>
+</dl>
+
+<footer>
+  <p class="disc">Model used for research, drafting, editing, and verification: Claude Fable 5.1.</p>
+  <p>© 2026 Jesse Rogers. All rights reserved. <a href="/">Back to the games</a> · <a href="https://www.youtube.com/@rogersmath1939" rel="noopener">YouTube</a> · <a href="https://github.com/RogersMath" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/jesse-rogers-42256797/" rel="noopener">LinkedIn</a></p>
+</footer>
+</main>
+</body>
+</html>
